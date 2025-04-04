@@ -1,0 +1,435 @@
+/* --- Basic Setup & Variables --- */
+:root {
+    --bd-green: #006a4e;
+    --bd-red: #f42a41;
+    --light-gray: #f0f0f0;
+    --dark-gray: #555;
+    --text-color: #333;
+    --bg-color: #ffffff;
+    --border-color: #ccc;
+    --hangman-color: #333;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    width: 95%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: var(--light-gray);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2 {
+    text-align: center;
+    color: var(--bd-green);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+/* --- Visibility Helper --- */
+.hidden {
+    display: none !important;
+}
+
+/* --- Category Selection --- */
+.category-selection {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.category-buttons button {
+    padding: 10px 15px;
+    font-size: 0.9em;
+    background-color: var(--bd-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.category-buttons button:hover {
+    background-color: #004c38;
+    transform: translateY(-2px);
+}
+
+/* --- Game Area --- */
+.game-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Top Info Bar */
+.game-info-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    font-size: 0.9em;
+}
+
+.info-box {
+    text-align: center;
+    padding: 5px;
+    flex: 1 1 100px; /* Flex basis for wrapping */
+}
+.info-box span {
+    font-weight: bold;
+    color: var(--bd-red);
+}
+.timer span.low-time {
+    color: var(--bd-red);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Hangman and Word Area */
+.hangman-and-word {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap; /* Wrap on smaller screens */
+    margin-bottom: 15px;
+}
+
+
+/* Pure CSS Hangman Drawing */
+.hangman-drawing {
+    width: 150px; /* Adjust size as needed */
+    height: 200px;
+    position: relative;
+    margin: 0 auto 20px auto; /* Center it when wrapped */
+}
+
+.gallows-base, .gallows-pole, .gallows-top, .gallows-rope {
+    background-color: var(--hangman-color);
+    position: absolute;
+}
+
+.gallows-base { width: 100px; height: 5px; bottom: 0; left: 25px; }
+.gallows-pole { width: 5px; height: 180px; bottom: 0; left: 50px; }
+.gallows-top { width: 80px; height: 5px; top: 20px; left: 50px; }
+.gallows-rope { width: 3px; height: 30px; top: 25px; left: 125px; } /* Position rope from the top bar */
+
+.hangman-part {
+    background-color: var(--bd-red); /* Use theme color */
+    position: absolute;
+    display: none; /* Initially hidden */
+}
+
+.hangman-part.visible {
+    display: block;
+}
+
+.head {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    top: 55px; /* Below the rope */
+    left: 110px;
+    background-color: transparent; /* Make hollow */
+    border: 3px solid var(--bd-red);
+}
+.torso { width: 3px; height: 50px; top: 85px; left: 125px; }
+.arm-right { width: 35px; height: 3px; top: 95px; left: 125px; transform: rotate(30deg); }
+.arm-left { width: 35px; height: 3px; top: 95px; left: 93px; transform: rotate(-30deg); }
+.leg-right { width: 35px; height: 3px; top: 133px; left: 125px; transform: rotate(60deg); }
+.leg-left { width: 35px; height: 3px; top: 133px; left: 93px; transform: rotate(-60deg); }
+
+
+/* Word Display Area */
+.word-display-container {
+    flex: 2; /* Take more space */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 250px;
+}
+.word-display {
+    font-size: 1.8em;
+    letter-spacing: 8px;
+    margin-bottom: 15px;
+    min-height: 1.5em; /* Prevent layout shift */
+    display: flex; /* Use flex for better spacing */
+    flex-wrap: wrap; /* Allow wrapping for long words */
+    justify-content: center;
+}
+.word-display span {
+    display: inline-block;
+    min-width: 1.2em; /* Ensure space for each char */
+    border-bottom: 3px solid var(--bd-green);
+    margin: 0 4px 5px 4px; /* Spacing around letters */
+    text-align: center;
+    font-weight: bold;
+    line-height: 1.2;
+    text-transform: uppercase; /* Ensure consistency */
+}
+.word-display span.space { /* Style for spaces */
+    border-bottom: none;
+    min-width: 0.5em; /* Smaller space */
+}
+
+
+/* Guessed Letters */
+.guessed-letters {
+    font-size: 0.9em;
+    color: var(--dark-gray);
+    min-height: 1.2em;
+    word-wrap: break-word; /* Prevent overflow */
+}
+.guessed-letters span {
+    font-weight: bold;
+    margin-left: 5px;
+    color: var(--bd-red);
+    text-transform: uppercase;
+}
+
+
+/* Keyboard */
+.keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px; /* Reduced gap */
+    margin: 20px auto;
+    max-width: 500px; /* Limit keyboard width */
+}
+
+.keyboard button {
+    font-size: 1.1em;
+    width: 35px; /* Fixed width */
+    height: 35px; /* Fixed height */
+    background-color: white;
+    color: var(--bd-green);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.keyboard button:hover:not(:disabled) {
+    background-color: var(--bd-green);
+    color: white;
+}
+
+.keyboard button:disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Game Controls */
+.game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.control-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-weight: bold;
+}
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.hint-btn {
+    background-color: var(--bd-red);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hint-btn:hover:not(:disabled) {
+    background-color: #c81e32;
+}
+.hint-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
+.next-round-btn {
+    background-color: var(--bd-green);
+    color: white;
+}
+.next-round-btn:hover {
+    background-color: #004c38;
+}
+
+
+/* Message Area */
+.message-area {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    min-height: 1.5em; /* Prevent layout jumps */
+}
+.message-area.win {
+    color: var(--bd-green);
+}
+.message-area.lose {
+    color: var(--bd-red);
+}
+
+/* Achievements Area */
+.achievements-area {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+.achievements-area ul {
+    list-style: none;
+}
+.achievements-area li {
+    margin-bottom: 8px;
+    color: var(--dark-gray);
+}
+.achievements-area li span {
+    margin-left: 10px;
+    font-weight: bold;
+}
+.achievements-area li span.unlocked {
+    color: #fca311; /* Gold/Orange for unlocked */
+}
+.achievements-area li span.locked {
+    color: #aaa;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    font-size: 0.9em;
+    color: var(--dark-gray);
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+    .container {
+        width: 98%;
+        padding: 15px;
+    }
+    .game-info-top {
+        font-size: 0.8em;
+    }
+    .hangman-and-word {
+       flex-direction: column;
+       align-items: center;
+    }
+    .hangman-drawing {
+        width: 120px;
+        height: 160px;
+        margin-bottom: 10px;
+    }
+     /* Adjust hangman part positions if needed for smaller size */
+
+    .word-display {
+        font-size: 1.5em;
+        letter-spacing: 6px;
+    }
+     .word-display span {
+        min-width: 1em;
+        margin: 0 3px 5px 3px;
+    }
+
+    .keyboard button {
+        width: 30px;
+        height: 30px;
+        font-size: 1em;
+    }
+    .keyboard {
+         gap: 4px;
+         max-width: 100%; /* Allow full width on mobile */
+    }
+
+    .control-btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    .hint-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.8em;}
+    h2 { font-size: 1.3em;}
+
+    .game-info-top {
+        justify-content: center; /* Center items when they wrap */
+    }
+    .info-box {
+        flex-basis: 45%; /* Two items per row */
+    }
+     .word-display {
+        font-size: 1.3em;
+        letter-spacing: 5px;
+    }
+}
